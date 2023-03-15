@@ -11,10 +11,8 @@ class Nim:
     def __init__(self, state: tuple[int,int] = None) -> None:
         self.__max_stones = 3
         self.__player_id = 1
-        self.__board = 13
+        self.__board = 1100
         self.reset(state)
-    
-
     
     def reset(self, state : tuple[int,int] = None) -> tuple[int,int]:
         if state is None:
@@ -37,13 +35,12 @@ class Nim:
             raise ValueError("Illegal action")
         self.__board -= action
         if self.is_final_state():
-            return False
+            return self.__get_state(), self.get_reward()
         self.__player_id = self.opposite_player[self.__player_id]
-        return self.__get_state()
+        return self.__get_state(), 0
 
     def get_reward(self) -> int:
         return 1 if self.__player_id == 1 else -1
-
 
     def is_final_state(self) -> bool:
         return self.__board == 0

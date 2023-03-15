@@ -11,94 +11,112 @@ class MCTNode:
         self.children = dict()
         self.visits = 1
         self.q_value = 0
-        self.uct_value = 0.00001
+        self.uct_value = 1
 
     def get_children(self) -> dict[int, MCTNode]:
         return self.children
 
     def get_game_state(self) -> tuple[int,int]:
         return self.game_state
+    
+    def get_visits(self) -> int:
+        return self.visits
+    
+    def get_q_value(self) -> int:
+        return self.q_value
 
+    def get_uct_value(self) -> int:
+        if self.parent is None:
+            return 0
+        self.uct_value = 5 * (2 * math.log(self.parent.visits) / self.visits) ** 0.5 
+        return self.uct_value
+
+    def get_win_percentage(self) -> float:
+        return self.q_value/self.visits
     def add_child(self, action: int, child: MCTNode) -> None:
         self.children[action] = child
-    
-    def update(self, reward: int) -> None:
-        self.visits += 1
-        self.q_value += reward
-        if self.parent is not None:
-            self.uct_value = self.q_value / self.visits + 2 * (2 * math.log(self.parent.visits) / self.visits) ** 0.5
 
-    #prints game state and children
+    #prints game state and and the state of the children
     def __str__(self) -> str:
-        return f"game state: {self.game_state}, children: {self.children}"
-    
+        string="\n"
+        for action, child in self.children.items():
+            string+="Action: "+str(action)+" "+str(child.get_uct_value())+"\n"
+        return f"game state: {self.game_state}, children: {string}"
+
 
 class MonteCarloTreeSearch:
 
     def __init__(self, game_state) -> None:
         self.root = MCTNode(game_state)
-        self.counter=0
-        self.counter2=0
+        self.liste=[]
     
     def expand_node(self, node: MCTNode) -> None:
         if node.get_game_state() != False:
-            self.counter2+=1
-            for action in Nim(node.get_game_state()).get_legal_actions():
-                game = Nim(node.get_game_state())
-                if game.is_final_state():
-                    print("Final state")
-                else:
-                    child = MCTNode(game.do_action(action), node)
+            if node.children == {}:
+                for action in Nim(node.get_game_state()).get_legal_actions():
+                    print("Action: ", action, "game state: ", node.get_game_state())
+                    game = Nim(node.get_game_state())
+                    game_state, reward = game.do_action(action)
+                    child = MCTNode(game_state, node)
                     node.add_child(action, child)
+                    self.liste.append(child)
     
     def rollout(self, node: MCTNode) -> int:
-        if node.get_game_state() == False:
-            return 0
         game = Nim(node.get_game_state())
+        reward = 0
         while not game.is_final_state():
-            game.do_action(random.choice(game.get_legal_actions()))
-        return game.get_reward()
-    
+            state, reward = game.do_action(random.choice(game.get_legal_actions()))
+        return reward
+
     def backpropagate(self, node: MCTNode, reward: int) -> None:
-        node.update(reward)
+        node.visits += 1
+        node.q_value += reward
         if node.parent is not None:
+            node.q_value += reward
             self.backpropagate(node.parent, reward)
-    
-    # def select(self, node: MCTNode) -> MCTNode:
-    #     if node.children == {}:
-    #         return node
-    #     else:
-    #         for action, child in node.children.items():
-    #             child.uct_value = child.q_value / child.visits + 2 * (2 * math.log(node.visits) / child.visits) ** 0.5
-    #         return self.select(max(node.children.items(), key=lambda x: x[1].uct_value)[1])
-    
-    def select(self, node: MCTNode) -> MCTNode:
-        best_node = node.get_children().get(1)
-        for action, child in (node.get_children().items()):
-            if child.uct_value > best_node.uct_value:
-                best_node = child
-        return best_node
 
-
-    def traverse(self, node: MCTNode) -> MCTNode:
-        print("Går inn  ",self.counter, "gang")
-        self.counter+=1
+    def tree_policy(self, node: MCTNode) -> MCTNode:
+        #node.visits += 1
+        print("player", node.get_game_state()[0])
+        if Nim(node.game_state).is_final_state():
+            self.backpropagate(node, Nim(node.game_state).get_reward())
+            print("leaf is final state")
+            return node
         if node.children == {}:
-            self.expand_node(node)
-            if len(node.children) == 0:
-                self.backpropagate(node,0)
-            else:
-                childnode = random.choice(list(node.children.values()))
-                reward = self.rollout(childnode)
-                self.backpropagate(childnode, reward)
+            return node
         else:
-            print(node.get_children())
-            childnode = self.select(node)
-            self.traverse(childnode)
+            best_node = node.children[1]
+            for action, child in node.children.items():
+                if node.get_game_state()[0] == 1:
+                    if child.get_uct_value() + child.get_win_percentage() > best_node.get_uct_value() + best_node.get_win_percentage():
+                        best_node = child
+                else:
+                    if child.get_uct_value() - child.get_win_percentage() < best_node.get_uct_value() - best_node.get_win_percentage():
+                        best_node = child
+            return self.tree_policy(best_node)
+        
+
+    def work_down_tree(self, node: MCTNode) -> None:
+        leaf_node = self.tree_policy(node)
+        self.expand_node(leaf_node)
+        print(leaf_node)
+        childnodes = list(leaf_node.children.values())
+        if  len(childnodes) > 0:
+            print("We roll out")
+            child = random.choice(childnodes)
+            reward = self.rollout(child)
+            self.backpropagate(child, reward)
+
+
+        # for action, child in leaf_node.children.items():
+        #     reward = self.rollout(child)
+        #     self.backpropagate(child, reward)
 
     def get_root(self) -> MCTNode:
         return self.root
     
     def get_best_action(self) -> int:
-        print(self.counter2, "ganger expandert")
         return max(self.root.children.items(), key=lambda x: x[1].q_value)[0]
+
+    def get_liste(self) -> list[MCTNode]:
+        return self.liste
