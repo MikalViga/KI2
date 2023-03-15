@@ -9,15 +9,11 @@ class MCTNode:
         self.parent = parent
         self.game_state = game_state
         self.children = dict()
-        self.visits = 0
+        self.visits = 1
         self.q_value = 0
-        self.uct_value = 0
+        self.uct_value = 0.00001
 
     def get_children(self) -> dict[int, MCTNode]:
-        print("Dette er barna",self.children[1].q_value,"-----------", type(self.children[1]))
-        for value,key in enumerate(self.children):
-            print("Dette er children")
-            print(key)
         return self.children
 
     def get_game_state(self) -> tuple[int,int]:
@@ -25,6 +21,12 @@ class MCTNode:
 
     def add_child(self, action: int, child: MCTNode) -> None:
         self.children[action] = child
+    
+    def update(self, reward: int) -> None:
+        self.visits += 1
+        self.q_value += reward
+        if self.parent is not None:
+            self.uct_value = self.q_value / self.visits + 2 * (2 * math.log(self.parent.visits) / self.visits) ** 0.5
 
     #prints game state and children
     def __str__(self) -> str:
@@ -36,9 +38,11 @@ class MonteCarloTreeSearch:
     def __init__(self, game_state) -> None:
         self.root = MCTNode(game_state)
         self.counter=0
+        self.counter2=0
     
     def expand_node(self, node: MCTNode) -> None:
         if node.get_game_state() != False:
+            self.counter2+=1
             for action in Nim(node.get_game_state()).get_legal_actions():
                 game = Nim(node.get_game_state())
                 if game.is_final_state():
@@ -53,11 +57,10 @@ class MonteCarloTreeSearch:
         game = Nim(node.get_game_state())
         while not game.is_final_state():
             game.do_action(random.choice(game.get_legal_actions()))
-        return 1#game.get_reward()
+        return game.get_reward()
     
     def backpropagate(self, node: MCTNode, reward: int) -> None:
-        node.visits += 1
-        node.q_value += reward
+        node.update(reward)
         if node.parent is not None:
             self.backpropagate(node.parent, reward)
     
@@ -72,14 +75,13 @@ class MonteCarloTreeSearch:
     def select(self, node: MCTNode) -> MCTNode:
         best_node = node.get_children().get(1)
         for action, child in (node.get_children().items()):
-            if child.visits < best_node.visits:
+            if child.uct_value > best_node.uct_value:
                 best_node = child
         return best_node
 
 
     def traverse(self, node: MCTNode) -> MCTNode:
         print("Går inn  ",self.counter, "gang")
-        print(node)
         self.counter+=1
         if node.children == {}:
             self.expand_node(node)
@@ -98,4 +100,5 @@ class MonteCarloTreeSearch:
         return self.root
     
     def get_best_action(self) -> int:
+        print(self.counter2, "ganger expandert")
         return max(self.root.children.items(), key=lambda x: x[1].q_value)[0]

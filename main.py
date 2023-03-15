@@ -3,10 +3,9 @@ from mcts import MCTNode, MonteCarloTreeSearch
 
 tree = MonteCarloTreeSearch([1,10])
 
-for i in range(100):
+for i in range(1000):
     tree.traverse(tree.get_root())
 
-print(tree.get_root().get_children())
+print("The best action is to remove ", tree.get_best_action(), " stones")
 
-
-#A function returns all the children of a node
+print("The number of times the root node was visited is ", tree.get_root().visits)

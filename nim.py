@@ -11,7 +11,7 @@ class Nim:
     def __init__(self, state: tuple[int,int] = None) -> None:
         self.__max_stones = 3
         self.__player_id = 1
-        self.__board = 12
+        self.__board = 13
         self.reset(state)
     
 
