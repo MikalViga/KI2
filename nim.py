@@ -1,18 +1,19 @@
+from game import Game
 
 
-
-class Nim:
+class Nim(Game):
 
     opposite_player = {
         1: 2,
         2: 1
     }
 
-    def __init__(self, state: tuple[int,int] = None) -> None:
+    def __init__(self, game_state: tuple[int,int] = None) -> None:
+        self.game_state = game_state
         self.__max_stones = 3
         self.__player_id = 1
         self.__board = 1100
-        self.reset(state)
+        self.reset(game_state)
     
     def reset(self, state : tuple[int,int] = None) -> tuple[int,int]:
         if state is None:
@@ -53,5 +54,7 @@ class Nim:
     def get_legal_actions(self) -> tuple[int,...]:
         return [i for i in range(1, min(self.__board, self.__max_stones)+1)]
 
+    def get_game_state(self) -> tuple[int,int]:
+        return self.__get_state()
     def __str__(self) -> str:
         return f"player: {self.__player_id}, board: {self.__board}"
