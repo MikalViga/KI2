@@ -1,6 +1,7 @@
 from disjoint_set import DisjointSet
+from game import Game
 
-class Hex:
+class Hex(Game):
 
     opposite_player = {
         1: 2,
@@ -54,7 +55,7 @@ class Hex:
         
         
 
-    def do_action(self, action: tuple[int,int]) -> int:
+    def do_action(self, action: tuple[int,int]) -> tuple[tuple[int,...],int]:
         i = action[0]
         j = action[1]
         player = self.player_id
@@ -74,8 +75,8 @@ class Hex:
         self.player_id = self.opposite_player[self.player_id]
         if self.is_final_state():
             print("Player", player, "wins!")
-            return False
-        return 0
+            return self.game_state, self.get_reward()
+        return self.game_state, 0
     
     def is_final_state(self) -> bool:
         return self.ds_red.find(self.top_node) == self.ds_red.find(self.bottom_node) or self.ds_blue.find(self.west_node) == self.ds_blue.find(self.east_node)
@@ -93,6 +94,9 @@ class Hex:
                     s += ". "
             s += "\n"
         print(s)
+    
+    def get_reward(self) -> int:
+        return 1 if self.player_id == 1 else -1
 
     def get_game_state(self)-> tuple[int,...]:
         self.game_state = self.player_id, *self.board
