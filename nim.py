@@ -54,7 +54,7 @@ class Nim(Game):
     def get_legal_actions(self) -> tuple[int,...]:
         return [i for i in range(1, min(self.__board, self.__max_stones)+1)]
 
-    def get_game_state(self) -> tuple[int,int]:
+    def get_game_state(self) -> tuple[int,...]:
         return self.__get_state()
     def __str__(self) -> str:
         return f"player: {self.__player_id}, board: {self.__board}"
