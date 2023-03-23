@@ -22,7 +22,6 @@ class RL:
     def simulate(self) -> None:
         for i in range(1):
             print(i, "-----------------")
-            print(len(self.rpbuffer))
             tree = MonteCarloTreeSearch(anet=ANET())
             self.game = Hex()
             while not self.game.is_final_state():
