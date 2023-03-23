@@ -1,5 +1,7 @@
 from disjoint_set import DisjointSet
-from game import Game
+from gameKI import Game
+import parameters as params
+
 
 class Hex(Game):
 
@@ -39,7 +41,7 @@ class Hex(Game):
                             if(x>=0 and x<self.size and y>=0 and y<self.size and self.board[x][y] == self.board[i][j]):
                                 self.ds_blue.union((i,j), (x,y))  
         if game_state is None:
-            self.size = 7
+            self.size = 5
             self.board = [[0 for i in range(self.size)] for j in range(self.size)]
             self.cells = [(i,j) for i in range(self.size) for j in range(self.size)]
             self.player_id = 1
@@ -125,3 +127,7 @@ class Hex(Game):
 
     def get_board_size(self) -> int:
         return self.size
+    
+    #A function that returns an array of all actions. Valid actions are equal to 1, invalid are equal to 0.
+    def get_action_mask(self) -> list[int]:
+        return [1 if self.board[i][j] == 0 else 0 for i in range(self.size) for j in range(self.size)]

@@ -1,4 +1,4 @@
-from game import Game
+from gameKI import Game
 
 
 class Nim(Game):

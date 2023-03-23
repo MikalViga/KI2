@@ -1,4 +1,4 @@
-from hex import Hex
+from hexKI import Hex
 game=Hex((1,1,2,2,1,0,0,0,0,0))
 
 while True:
