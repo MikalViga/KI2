@@ -39,7 +39,7 @@ class Hex(Game):
                             if(x>=0 and x<self.size and y>=0 and y<self.size and self.board[x][y] == self.board[i][j]):
                                 self.ds_blue.union((i,j), (x,y))  
         if game_state is None:
-            self.size = 7
+            self.size = 5
             self.board = [[0 for i in range(self.size)] for j in range(self.size)]
             self.cells = [(i,j) for i in range(self.size) for j in range(self.size)]
             self.player_id = 1

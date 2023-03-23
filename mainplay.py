@@ -6,7 +6,7 @@ tree = MonteCarloTreeSearch()
 
 while True:
     tree.game.print_board()
-    for i in range(5000):
+    for i in range(1000):
         tree.work_down_tree(tree.get_root())
     game=Hex(tree.get_root().get_game_state())
     game.do_action(tree.get_best_action())
