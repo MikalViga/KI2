@@ -131,7 +131,7 @@ class MonteCarloTreeSearch:
     def get_liste(self) -> list[MCTNode]:
         return self.liste
     
-    #A function that returns the normalized action probabilities
+    #A function that returns the normalized action probabilities. It returns a list containting the the probability of each action. The probabilities are listed in the order of game.get_all_actions()
     def get_normalized_action_probabilities(self) -> list[int,float]:
         total_visits = sum(child.visits for child in self.root.children.values())
         return [(action, child.visits / total_visits) for action, child in self.root.children.items()]
