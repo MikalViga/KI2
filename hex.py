@@ -39,7 +39,7 @@ class Hex(Game):
                             if(x>=0 and x<self.size and y>=0 and y<self.size and self.board[x][y] == self.board[i][j]):
                                 self.ds_blue.union((i,j), (x,y))  
         if game_state is None:
-            self.size = 4
+            self.size = 7
             self.board = [[0 for i in range(self.size)] for j in range(self.size)]
             self.cells = [(i,j) for i in range(self.size) for j in range(self.size)]
             self.player_id = 1
@@ -118,3 +118,10 @@ class Hex(Game):
 
     def get_ds_blue(self) -> DisjointSet:
         return self.ds_blue
+
+    #A function that returns all actions that are legal action if the game just started
+    def get_all_actions(self) -> list[tuple[int,int]]:
+        return [(i,j) for i in range(self.size) for j in range(self.size)]
+
+    def get_board_size(self) -> int:
+        return self.size
