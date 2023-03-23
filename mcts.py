@@ -92,10 +92,6 @@ class MonteCarloTreeSearch:
     def tree_policy(self, node: MCTNode) -> MCTNode:
         #node.visits += 1
         if Hex(node.game_state).is_final_state():
-            #print("final state", ((1,1,2,2,1,0,0,1,0,0)) == node.game_state)
-            if node.game_state == ((1,1,2,2,1,0,0,1,0,0)):
-                pass
-                #print(node, Hex(node.game_state).get_reward())
             self.backpropagate(node, Hex(node.game_state).get_reward())
             return node
         if node.children == {}:

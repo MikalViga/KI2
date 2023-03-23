@@ -3,10 +3,12 @@ from mctsKI import MCTNode, MonteCarloTreeSearch
 from hexKI import Hex
 
 tree = MonteCarloTreeSearch()
-
+a=0
 while True:
     tree.game.print_board()
-    for i in range(1000):
+    for i in range(300):
+        a+=1
+        print("------------------",a,"------------------")
         tree.work_down_tree(tree.get_root())
     game=Hex(tree.get_root().get_game_state())
     game.do_action(tree.get_best_action())
