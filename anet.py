@@ -2,8 +2,8 @@ import random
 
 import numpy as np
 import parameters as params
-from nimKI import Nim
-from hexKI import Hex
+from nim import Nim
+from hex import Hex
 import tensorflow as tf
 from keras.models import Sequential
 from keras.layers import Input, Dense
@@ -25,14 +25,15 @@ class ANET:
     def choose_greedy_action(self, state: tuple[int,int]) -> tuple[int,...]:
         game = Hex(state)
         valid_actions = game.get_action_mask()
-        #print("Start predict")
-        #probs = self.model.predict(np.array([state]))
-        #print("End predict")
-        #actions = valid_actions * probs
-        #print(actions)
-        #print(np.argmax(actions))
-        return 1#np.argmax(actions)
+        probs = self.model(np.array([state]))
+        actions = valid_actions * probs
+        return game.get_all_actions()[np.argmax(actions)]
     
+    def choose_epsilon_greedt_action(self, state: tuple[int,int]) -> tuple[int,...]:
+        if random.random() < params.epsilon:
+            return self.choose_random_action(state)
+        else:
+            return self.choose_greedy_action(state)
 
     def build_model(self) -> Sequential:
         model = tf.keras.Sequential()
@@ -45,6 +46,11 @@ class ANET:
 
     def fit(self, rpbuffer: np.ndarray) -> None:
         X, Y = rpbuffer[:,:-len(self.game.get_all_actions())], rpbuffer[:,-len(self.game.get_all_actions()):]
-        self.model.fit(X, Y, epochs=10, batch_size=32, verbose=1)
+        self.model.fit(X, Y, epochs=10, batch_size=32, verbose=0)
         print(self.model.predict(X))
-        print(len(self.rpbuffer))
+        #print(len(self.rpbuffer))
+    
+    #saves the model. Input: more training data, name for the file.
+    def save_model(self, rpbuffer: np.ndarray, name: str) -> None:
+        self.fit(rpbuffer)
+        self.model.save(name+".h5")

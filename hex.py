@@ -1,5 +1,5 @@
 from disjoint_set import DisjointSet
-from gameKI import Game
+from game import Game
 import parameters as params
 
 
@@ -64,8 +64,10 @@ class Hex(Game):
         j = action[1]
         player = self.player_id
         if i>=self.size or j>=self.size or i<0 or j<0:
+            print("Illegal move")
             return "Illegal move"
         if self.board[i][j] != 0:
+            print("Illegal move")
             return "Illegal move"
         if player == 1:
             ds = self.ds_red

@@ -1,6 +1,6 @@
-from nimKI import Nim
-from mctsKI import MCTNode, MonteCarloTreeSearch
-from hexKI import Hex
+from nim import Nim
+from mcts import MCTNode, MonteCarloTreeSearch
+from hex import Hex
 import parameters as params
 
 

@@ -1,9 +1,9 @@
 from __future__ import annotations
 import math
 import random
-from nimKI import Nim
-from hexKI import Hex
-from anetKI import ANET
+from nim import Nim
+from hex import Hex
+from anet import ANET
 import parameters as params
 
 
@@ -17,7 +17,7 @@ class MCTNode:
         self.visits = 1
         self.q_value = 0
         self.uct_value = 1
-        self.anet = ANET()
+        #self.anet = ANET()
 
     def get_children(self) -> dict[int, MCTNode]:
         return self.children
@@ -52,11 +52,13 @@ class MCTNode:
 
 class MonteCarloTreeSearch:
 
-    def __init__(self, game_state = None) -> None:
+    def __init__(self, game_state = None, anet = None) -> None:
         self.game=Hex(game_state)
-
         self.root = MCTNode(self.game.game_state)
-        self.anet = ANET()
+        if anet is None:
+            self.anet = ANET()
+        else:
+            self.anet = anet
         self.liste=[]
     
     def expand_node(self, node: MCTNode) -> None:
@@ -75,12 +77,11 @@ class MonteCarloTreeSearch:
         if game.is_final_state():
             return game.get_reward()
         while not game.is_final_state():
-            k+=1
-            print("k: ", k)
-            random_choice = random.choice(game.get_legal_actions())
-            #random_choice = self.anet.choose_random_action(game.get_game_state())
-            #greedy_choice = self.anet.choose_greedy_action(game.get_game_state())
-            state, reward = game.do_action(random_choice)
+            #random_choice = random.choice(game.get_legal_actions())
+            #choice = self.anet.choose_random_action(game.get_game_state())
+            choice = self.anet.choose_greedy_action(game.get_game_state())
+            print(choice)
+            state, reward = game.do_action(choice)
         return reward
 
     def backpropagate(self, node: MCTNode, reward: int) -> None:

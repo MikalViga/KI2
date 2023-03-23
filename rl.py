@@ -1,6 +1,6 @@
-from nimKI import Nim
-from hexKI import Hex
-from mctsKI import MCTNode, MonteCarloTreeSearch
+from nim import Nim
+from hex import Hex
+from mcts import MCTNode, MonteCarloTreeSearch
 import numpy as np
 import parameters as params
 
@@ -8,7 +8,7 @@ import parameters as params
 import tensorflow as tf
 from keras.models import Sequential
 from keras.layers import Input, Dense
-
+from anet import ANET
 
 
 class RL:
@@ -17,16 +17,17 @@ class RL:
         self.game = Hex()
         self.rpbuffer = np.empty((0,self.game.get_board_size()**2 + 1 + len(self.game.get_all_actions())), dtype=np.float64)
         self.model: Sequential = self.build_model() 
+        self.anet = ANET()
 
     def simulate(self) -> None:
-        for i in range(2):
+        for i in range(1):
             print(i, "-----------------")
             print(len(self.rpbuffer))
-            tree = MonteCarloTreeSearch()
+            tree = MonteCarloTreeSearch(anet=ANET())
             self.game = Hex()
             while not self.game.is_final_state():
             
-                for i in range(10):
+                for i in range(300):
                     tree.work_down_tree(tree.get_root())
                 distribution = []
                 #print([i[0] for i in tree.get_normalized_action_probabilities()])
@@ -41,9 +42,11 @@ class RL:
                 game_state = self.game.do_action(tree.get_best_action())[0]
                 print("Game state: ", game_state)
                 print("not_final_state: ")
-                tree = MonteCarloTreeSearch(game_state)
+                tree = MonteCarloTreeSearch(game_state, anet=ANET())
         #print(self.rpbuffer)
-        self.fit(self.rpbuffer)
+            self.fit(self.rpbuffer)
+        #save the rpbuffer to a file
+        self.anet.save_model(self.rpbuffer, "hex_5_300_10_32_1_128_64_1_64_1_32_1_16_1_8_")
 
     def build_model(self) -> Sequential:
         model = tf.keras.Sequential()

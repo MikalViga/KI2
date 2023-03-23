@@ -1,5 +1,5 @@
-from rlKI import RL
-from nimKI import Nim
+from rl import RL
+from nim import Nim
 import parameters as params
 
 

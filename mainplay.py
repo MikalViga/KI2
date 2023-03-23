@@ -1,12 +1,12 @@
-from nimKI import Nim
-from mctsKI import MCTNode, MonteCarloTreeSearch
-from hexKI import Hex
+from nim import Nim
+from mcts import MCTNode, MonteCarloTreeSearch
+from hex import Hex
 
 tree = MonteCarloTreeSearch()
 a=0
 while True:
     tree.game.print_board()
-    for i in range(300):
+    for i in range(50):
         a+=1
         print("------------------",a,"------------------")
         tree.work_down_tree(tree.get_root())
