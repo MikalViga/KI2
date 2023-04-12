@@ -1,6 +1,8 @@
 from nim import Nim
 from mcts import MCTNode, MonteCarloTreeSearch
 from hex import Hex
+import parameters as params
+
 
 tree = MonteCarloTreeSearch()
 

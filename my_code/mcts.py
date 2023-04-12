@@ -4,6 +4,8 @@ import random
 from nim import Nim
 from hex import Hex
 from anet import ANET
+import parameters as params
+
 
 
 class MCTNode:
@@ -39,7 +41,6 @@ class MCTNode:
     def add_child(self, action: int, child: MCTNode) -> None:
         self.children[action] = child
 
-    #prints game state and and the state of the children
     def __str__(self) -> str:
         string="\n"
         for action, child in self.children.items():
@@ -49,18 +50,19 @@ class MCTNode:
 
 class MonteCarloTreeSearch:
 
-    def __init__(self, game_state = None) -> None:
+    def __init__(self, game_state = None, anet = None) -> None:
         self.game=Hex(game_state)
-
         self.root = MCTNode(self.game.game_state)
-        self.anet = ANET()
+        if anet is None:
+            self.anet = ANET()
+        else:
+            self.anet = anet
         self.liste=[]
     
     def expand_node(self, node: MCTNode) -> None:
         if node.get_game_state() != False:
             if node.children == {}:
                 for action in Hex(node.get_game_state()).get_legal_actions():
-                    #print("Action: ", action, "game state: ", node.get_game_state())
                     game = Hex(node.get_game_state())
                     game_state, reward = game.do_action(action)
                     child = MCTNode(game_state, node)
@@ -68,15 +70,13 @@ class MonteCarloTreeSearch:
                     self.liste.append(child)
     
     def rollout(self, node: MCTNode) -> int:
+        k=1
         game = Hex(node.get_game_state())
         if game.is_final_state():
             return game.get_reward()
         while not game.is_final_state():
-            random_choice = random.choice(game.get_legal_actions())
-            #print("random choice: ", random_choice)
-            state, reward = game.do_action(random_choice)
-            #random_choice = self.anet.choose_random_action(game.get_game_state())
-            #state, reward = game.do_action(random_choice)
+            choice = self.anet.choose_epsilon_greedy_action(game.get_game_state())
+            state, reward = game.do_action(choice)
         return reward
 
     def backpropagate(self, node: MCTNode, reward: int) -> None:
@@ -88,10 +88,6 @@ class MonteCarloTreeSearch:
     def tree_policy(self, node: MCTNode) -> MCTNode:
         #node.visits += 1
         if Hex(node.game_state).is_final_state():
-            #print("final state", ((1,1,2,2,1,0,0,1,0,0)) == node.game_state)
-            if node.game_state == ((1,1,2,2,1,0,0,1,0,0)):
-                pass
-                #print(node, Hex(node.game_state).get_reward())
             self.backpropagate(node, Hex(node.game_state).get_reward())
             return node
         if node.children == {}:
