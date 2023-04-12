@@ -13,11 +13,9 @@ class Hex(Game):
     def __init__(self, game_state: tuple[int,...] = None) -> None:
         if game_state is not None:
             self.game_state = game_state
-            #print("game state: ", self.game_state)
             self.player_id = game_state[0]
             self.size = int(len(game_state[1:])**0.5)
             self.board = [[game_state[1:][i*self.size+j] for j in range(self.size)] for i in range(self.size)]
-            #print(self.board)
             self.cells = [(i,j) for i in range(self.size) for j in range(self.size)]
             self.top_node =(-1,0)
             self.west_node = (0,-1)
@@ -41,7 +39,7 @@ class Hex(Game):
                             if(x>=0 and x<self.size and y>=0 and y<self.size and self.board[x][y] == self.board[i][j]):
                                 self.ds_blue.union((i,j), (x,y))  
         if game_state is None:
-            self.size = 5
+            self.size = params.board_size
             self.board = [[0 for i in range(self.size)] for j in range(self.size)]
             self.cells = [(i,j) for i in range(self.size) for j in range(self.size)]
             self.player_id = 1
@@ -64,10 +62,10 @@ class Hex(Game):
         j = action[1]
         player = self.player_id
         if i>=self.size or j>=self.size or i<0 or j<0:
-            print("Illegal move")
+            print("Illegal move",(i,j))
             return "Illegal move"
         if self.board[i][j] != 0:
-            print("Illegal move")
+            print("Illegal move",(i,j))
             return "Illegal move"
         if player == 1:
             ds = self.ds_red
@@ -80,8 +78,7 @@ class Hex(Game):
                 ds.union((i,j),(x,y))
 
         if self.is_final_state():
-            #print(action, "Player", player, "wins!", self.get_game_state()[0], "turn")
-            #print("Player", player, "wins!")
+      
             return self.get_game_state(), self.get_reward()
         self.player_id = self.opposite_player[self.player_id]
         return self.get_game_state(), 0

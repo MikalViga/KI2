@@ -17,7 +17,6 @@ class MCTNode:
         self.visits = 1
         self.q_value = 0
         self.uct_value = 1
-        #self.anet = ANET()
 
     def get_children(self) -> dict[int, MCTNode]:
         return self.children
@@ -42,7 +41,6 @@ class MCTNode:
     def add_child(self, action: int, child: MCTNode) -> None:
         self.children[action] = child
 
-    #prints game state and and the state of the children
     def __str__(self) -> str:
         string="\n"
         for action, child in self.children.items():
@@ -77,10 +75,7 @@ class MonteCarloTreeSearch:
         if game.is_final_state():
             return game.get_reward()
         while not game.is_final_state():
-            #random_choice = random.choice(game.get_legal_actions())
-            #choice = self.anet.choose_random_action(game.get_game_state())
-            choice = self.anet.choose_greedy_action(game.get_game_state())
-            print(choice)
+            choice = self.anet.choose_epsilon_greedy_action(game.get_game_state())
             state, reward = game.do_action(choice)
         return reward
 
