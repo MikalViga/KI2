@@ -1,4 +1,5 @@
 from disjoint_set import DisjointSet
+import numpy as np
 from game import Game
 import parameters as params
 
@@ -76,9 +77,7 @@ class Hex(Game):
         for (x,y) in [(i+1,j),(i-1,j),(i,j+1),(i,j-1), (i+1,j-1),(i-1,j+1)]:
             if x>=0 and x<self.size and y>=0 and y<self.size and self.board[x][y] == self.board[i][j]:
                 ds.union((i,j),(x,y))
-
         if self.is_final_state():
-      
             return self.get_game_state(), self.get_reward()
         self.player_id = self.opposite_player[self.player_id]
         return self.get_game_state(), 0
@@ -89,6 +88,7 @@ class Hex(Game):
     
     #prints board with the connections between the nodes
     def print_board(self) -> str:
+        print(self.get_game_state())
         s = "Player " + str(self.player_id) + " to move \n"
         for i in range(self.size):
             for j in range(self.size):
@@ -100,6 +100,14 @@ class Hex(Game):
                     s += ". "
             s += "\n"
         print(s)
+    
+    #print the board in a diamond structrure 
+    def print_board_diamond(self) -> str:
+        print("Player " + str(self.player_id) + " to move \n")        
+        a = np.array(self.board)
+        b = [np.diag(a[-1:-a.shape[0]-1:-1,:], i).tolist() for i in range(-a.shape[0]+1,a.shape[0])]
+        for i in b:
+            print(str(i).center(50), sep=" ")
     
     def get_reward(self) -> int:
         return 1 if self.player_id == 1 else -1

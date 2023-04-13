@@ -34,26 +34,36 @@ class ANET:
     
     def reset_epsilon(self):
         self.epsilon = params.epsilon
-        
+
     def choose_epsilon_greedy_action(self, state: tuple[int,int]) -> tuple[int,...]:
         self.epsilon *= params.epsilon_decay
         if random.random() < self.epsilon:
             return self.choose_random_action(state)
         else:
             return self.choose_greedy_action(state)
+    
+    def choose_from_probabilities(self, state: tuple[int,int]) -> tuple[int,...]:
+        game = Hex(state)
+        valid_actions = game.get_action_mask()
+        probs = self.model(np.array([state]))
+        actions = valid_actions * probs
+
+        a = np.array(actions[0])
+        a /= a.sum()
+        print(a)
+        return np.array(game.get_all_actions())[np.random.choice(len(a), p=a)]
 
     def build_model(self) -> Sequential:
         model = tf.keras.Sequential()
-        model.add(tf.keras.layers.Dense(64, activation='relu', input_shape=(self.game.get_board_size()**2 + 1,)))
-        model.add(tf.keras.layers.Dense(64, activation='relu'))
-        model.add(tf.keras.layers.Dense(64, activation='relu'))
+        for i in range(params.num_layers):
+            if i == 0:
+                model.add(tf.keras.layers.Dense(params.num_neurons, activation=params.activation_function, input_shape=(self.game.get_board_size()**2 + 1,)))
+            else:
+                model.add(tf.keras.layers.Dense(params.num_neurons, activation=params.activation_function))
+        
         model.add(Dense(len(self.game.get_all_actions()), activation='softmax'))
-        model.compile(loss='categorical_crossentropy', optimizer=tf.keras.optimizers.Adam(learning_rate=0.001), metrics=['accuracy'])
-        # model.add(tf.keras.layers.Dense(128, activation='relu', input_shape=(self.game.get_board_size()**2 + 1,)))
-        # model.add(tf.keras.layers.Dense(64, activation='relu'))
-        # model.add(Input(shape=(self.game.get_board_size()**2 + 1,)))
-        # model.add(Dense(len(self.game.get_all_actions()), activation='softmax'))
-        # model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+        model.compile(loss='categorical_crossentropy', optimizer=params.optimizer, metrics=['accuracy'])
+        
         return model 
 
 #relu
@@ -75,6 +85,6 @@ class ANET:
 
     
     #saves the model. Input: more training data, name for the file.
-    def save_model(self, rpbuffer: np.ndarray, name: str) -> None:
-        self.fit(rpbuffer)
+    def save_model(self, buffer: np.ndarray, name: str) -> None:
+        self.fit(buffer)
         self.model.save(name+".h5")
