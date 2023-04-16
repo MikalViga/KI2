@@ -25,8 +25,8 @@ while False:
     tree = MonteCarloTreeSearch(game_state = game.get_game_state(), anet=ANET(filepath="my_code/50_3.h5"))
     
 while True:
-    tree1=MonteCarloTreeSearch(game_state = game.get_game_state(), anet=ANET(filepath="my_code/0_4.h5"))
-    for i in range(1000):
+    tree1=MonteCarloTreeSearch(game_state = game.get_game_state())#, anet=ANET(filepath="my_code/0_4.h5"))
+    for i in range(400):
         tree1.work_down_tree(tree1.get_root())
     for i in tree1.get_normalized_action_probabilities():
         print(i)
@@ -38,8 +38,8 @@ while True:
         break
 
 
-    tree2=MonteCarloTreeSearch(game_state = game.get_game_state(), anet=ANET(filepath="my_code/305_3.h5"))
-    for i in range(1000):
+    tree2=MonteCarloTreeSearch(game_state = game.get_game_state())#, anet=ANET(filepath="my_code/305_3.h5"))
+    for i in range(400):
         tree2.work_down_tree(tree2.get_root())
     for i in tree2.get_normalized_action_probabilities():
         print(i)

@@ -17,15 +17,15 @@ optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate) #SGD, Adagrad,
 
 
 #RL training
-save_interval = 20
-search_games = 300
-search_seconds = 4
-max_buffer_size = 500
+save_interval = 50
+actual_games = 1000
+search_seconds = 5
+max_buffer_size = 512
 
 #Simulation
 num_cached_anets = 5
-num_games = 300
-topp_models_filenames = ["0_4.h5", "140_4.h5"]
+num_games = 1000
+topp_models_filenames = ["c400_4.h5", "d50_5.h5"]
 thinking_depth = 40
 
 

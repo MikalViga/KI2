@@ -30,6 +30,12 @@ class ANET:
         valid_actions = game.get_action_mask()
         probs = self.model(np.array([state]))
         actions = valid_actions * probs
+        if np.sum(actions) == 0:
+            #write to log
+            print("No valid actions found")
+            with open("my_code/log.txt", "a") as f:
+                f.write(str(state) + " " + str(probs) + " " + str(valid_actions) + " " + str(actions) )
+            return self.choose_random_action(state)
         return game.get_all_actions()[np.argmax(actions)]
     
     def reset_epsilon(self):
@@ -50,8 +56,15 @@ class ANET:
 
         a = np.array(actions[0])
         a /= a.sum()
-        print(a)
-        return np.array(game.get_all_actions())[np.random.choice(len(a), p=a)]
+        for i in range(a.shape[0]):
+            print(game.get_all_actions()[i], a.round(2)[i])
+        print(a.sum())
+        if random.random() < 0.8:
+            print("Greedey")
+            return self.choose_greedy_action(state)
+        action = np.array(game.get_all_actions())[np.random.choice(len(a), p=a)]
+        print(action)
+        return action
 
     def build_model(self) -> Sequential:
         model = tf.keras.Sequential()

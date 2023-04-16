@@ -7,8 +7,8 @@ import parameters as params
 class Hex(Game):
 
     opposite_player = {
-        1: 2,
-        2: 1
+        1: -1,
+        -1: 1
     }
 
     def __init__(self, game_state: tuple[int,...] = None) -> None:
@@ -35,7 +35,7 @@ class Hex(Game):
                         for (x,y) in [(i+1,j),(i-1,j),(i,j+1),(i,j-1), (i+1,j-1),(i-1,j+1)]:
                             if(x>=0 and x<self.size and y>=0 and y<self.size and self.board[x][y] == self.board[i][j]):
                                 self.ds_red.union((i,j), (x,y))
-                    if self.board[i][j] == 2:
+                    if self.board[i][j] == -1:
                         for (x,y) in [(i+1,j),(i-1,j),(i,j+1),(i,j-1), (i+1,j-1),(i-1,j+1)]:
                             if(x>=0 and x<self.size and y>=0 and y<self.size and self.board[x][y] == self.board[i][j]):
                                 self.ds_blue.union((i,j), (x,y))  
@@ -64,8 +64,15 @@ class Hex(Game):
         player = self.player_id
         if i>=self.size or j>=self.size or i<0 or j<0:
             print("Illegal move",(i,j))
+            print(self.board)
+            print(self.player_id)
+            print(self.game_state)
             return "Illegal move"
         if self.board[i][j] != 0:
+            print("Illegal move",(i,j))
+            print(self.board)
+            print(self.player_id)
+            print(self.game_state)
             print("Illegal move",(i,j))
             return "Illegal move"
         if player == 1:
@@ -73,7 +80,7 @@ class Hex(Game):
             self.board[i][j] = 1
         else:
             ds = self.ds_blue
-            self.board[i][j] = 2
+            self.board[i][j] = -1
         for (x,y) in [(i+1,j),(i-1,j),(i,j+1),(i,j-1), (i+1,j-1),(i-1,j+1)]:
             if x>=0 and x<self.size and y>=0 and y<self.size and self.board[x][y] == self.board[i][j]:
                 ds.union((i,j),(x,y))
@@ -88,13 +95,12 @@ class Hex(Game):
     
     #prints board with the connections between the nodes
     def print_board(self) -> str:
-        print(self.get_game_state())
-        s = "Player " + str(self.player_id) + " to move \n"
+        s = ""#+"Player " + str(self.player_id) + " to move \n"
         for i in range(self.size):
             for j in range(self.size):
                 if self.board[i][j] == 1:
                     s += "R "
-                elif self.board[i][j] == 2:
+                elif self.board[i][j] == -1:
                     s += "B "
                 else:
                     s += ". "
