@@ -24,8 +24,8 @@ max_buffer_size = 512
 
 #Simulation
 num_cached_anets = 5
-num_games = 1000
-topp_models_filenames = ["c400_4.h5", "d50_5.h5"]
+num_games = 75
+topp_models_filenames = ["c950_4.h5", "c400_4.h5", "c100_4.h5", "c0_4.h5"]
 thinking_depth = 40
 
 
