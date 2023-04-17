@@ -114,7 +114,72 @@ class Hex(Game):
         b = [np.diag(a[-1:-a.shape[0]-1:-1,:], i).tolist() for i in range(-a.shape[0]+1,a.shape[0])]
         for i in b:
             print(str(i).center(50), sep=" ")
-    
+        
+
+    def print_board_diamond1(self) -> None:
+        print("Player" + str(self.player_id) + " to move \n")
+        print(self.get_game_state())
+        brettet = self.get_game_state()[1:]
+        a = np.array(brettet)
+        
+        d = {0: "▢", 1: "R", -1: "B"}
+        a = np.vectorize(d.get)(a.astype(int))
+        
+        i = 1
+        
+        for j in range(self.size*2-1):
+            b = a[:i]
+            a = a[i:]
+            
+            b = np.ndarray.tolist(b)
+            if i != 1:
+                k = 1
+                while k < len(b):
+                    b.insert(k, '⎯')
+                    k = (k+2)
+            
+            diagon = []
+            if j < self.size-1:
+                i += 1
+                k = 0
+                while k < len(b):
+                    diagon.append("⟋ ⟍")
+                    k = (k+2)
+            else: 
+                i -=1
+                k = 1
+                while k < len(b):
+                    diagon.append("⟍ ⟋")
+                    k = (k+2)
+
+            c = " ".join(b)
+            print(*str(c).center(20))
+        
+            c = " ".join(diagon)    
+            print(*str(c).center(20))
+
+    def print_diamond2(self) -> None:
+        a = np.array(self.board)
+        b = [np.diag(a[-1:-a.shape[0]-1:-1,:], i).tolist() for i in range(-a.shape[0]+1,a.shape[0])]
+        for i in range(len(b)):
+            s = ""
+            for j in range(len(b[i])):
+                if b[i][j] == 1:
+                    s += "R"
+                elif b[i][j] == -1:
+                    s += "B"
+                else:
+                    s += "▢"
+                if j != len(b[i])-1:
+                    s += " - "
+            print(s.center(50), sep=" ")
+            if i <self.size-1:
+                print((("/ " + "\\ ")*len(b[i])).center(50), sep=" ")
+            else:
+                print((("\\ " + "/ ")*(len(b[i])-1)).center(50), sep=" ")
+            
+
+
     def get_reward(self) -> int:
         return 1 if self.player_id == 1 else -1
 

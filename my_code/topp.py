@@ -23,6 +23,7 @@ class TOPP:
             print(self.agent_names[self.agents.index(agent1)], "-------------------")
             move1 = agent1.choose_from_probabilities(game.get_game_state())
             game.do_action(move1)
+            game.print_diamond2()
             game.print_board()
             if game.is_final_state():
                 print(self.agent_names[self.agents.index(agent1)]," wins")
@@ -31,6 +32,7 @@ class TOPP:
             print(self.agent_names[self.agents.index(agent2)], "-------------------")
             move2 = agent2.choose_from_probabilities(game.get_game_state())
             game.do_action(move2)
+            game.print_diamond2()
             game.print_board()
             if game.is_final_state():
                 print(self.agent_names[self.agents.index(agent2)]," wins")
@@ -94,13 +96,13 @@ class TOPP:
             while True:
                 print("R - 0 turn --------------------------------------------------")
                 game.do_action(anet1.choose_from_probabilities(game.get_game_state()))
-                game.print_board()
+                game.print_board_diamond()
                 if game.is_final_state():
                     one += 1
                     break
                 print("B - 40 turn --------------------------------------------------")
                 game.do_action(anet2.choose_from_probabilities(game.get_game_state()))
-                game.print_board()
+                game.print_board_diamond()
                 if game.is_final_state():
                     two += 1
                     break
