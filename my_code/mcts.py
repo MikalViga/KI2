@@ -33,7 +33,7 @@ class MCTNode:
     def get_uct_value(self) -> int:
         if self.parent is None:
             return 0
-        self.uct_value = 2 * (1 * math.log(self.parent.visits) / self.visits) ** 0.5 
+        self.uct_value = 1 * (1 * math.log(self.parent.visits) / self.visits) ** 0.5 
         return self.uct_value
 
     def get_win_percentage(self) -> float:

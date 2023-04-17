@@ -3,10 +3,9 @@ from mcts import MCTNode, MonteCarloTreeSearch
 from hex import Hex
 from anet import ANET
 
-tree1 = MonteCarloTreeSearch(anet=ANET(filepath="my_code/2_2.h5"))
-tree2 = MonteCarloTreeSearch(anet=ANET(filepath="my_code/15_4.h5"))
+
 a=0
-game=Hex(tree1.get_root().get_game_state())
+game=Hex()
 while False:
     tree.game.print_board()
     for i in range(1000):
@@ -26,25 +25,27 @@ while False:
     tree = MonteCarloTreeSearch(game_state = game.get_game_state(), anet=ANET(filepath="my_code/50_3.h5"))
     
 while True:
-    tree1=MonteCarloTreeSearch(game_state = game.get_game_state(), anet=ANET(filepath="my_code/2_2.h5"))
-    for i in range(100):
+    tree1=MonteCarloTreeSearch(game_state = game.get_game_state())#, anet=ANET(filepath="my_code/0_4.h5"))
+    for i in range(400):
         tree1.work_down_tree(tree1.get_root())
+    for i in tree1.get_normalized_action_probabilities():
+        print(i)
     game.do_action(tree1.get_best_action())
     print("player 1 did", tree1.get_best_action())
-    print(game.print_board())
-    #input("press enter to continue")
+    game.print_board()
     if game.is_final_state():
         print("1 wins")
         break
 
 
-    tree2=MonteCarloTreeSearch(game_state = game.get_game_state(), anet=ANET(filepath="my_code/15_4.h5"))
-    for i in range(100):
+    tree2=MonteCarloTreeSearch(game_state = game.get_game_state())#, anet=ANET(filepath="my_code/305_3.h5"))
+    for i in range(400):
         tree2.work_down_tree(tree2.get_root())
+    for i in tree2.get_normalized_action_probabilities():
+        print(i)
     game.do_action(tree2.get_best_action())
     print("player 2 did", tree2.get_best_action())
-    print(game.print_board())
-    #input("press enter to continue")
+    game.print_board()
     if game.is_final_state():
         print("2 wins")
         break

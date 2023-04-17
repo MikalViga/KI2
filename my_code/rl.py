@@ -16,19 +16,18 @@ class RL:
     def __init__(self) -> None:
         self.game = Hex()
         self.rpbuffer = np.empty((0,self.game.get_board_size()**2 + 1 + len(self.game.get_all_actions())), dtype=np.float64)
-        self.anet = ANET() #ANET(filepath="my_code/305_3.h5")
-        self.games = 15
-        self.seconds = 4
+        self.anet = ANET(filepath="my_code/c950_4.h5")
 
     def simulate(self) -> None:
        
-        for i in range(self.games):
+        for i in range(params.actual_games):
             print("game", i, "started")
-            tree = MonteCarloTreeSearch(anet=ANET())
+            tree = MonteCarloTreeSearch(anet=self.anet)
             self.game = Hex()
             self.anet.reset_epsilon()
             while not self.game.is_final_state():
-                t_end = time.time() + self.seconds
+                self.anet.reset_epsilon()
+                t_end = time.time() + params.search_seconds
                 runs = 0
                 while time.time() < t_end and runs < 1000:
                     tree.work_down_tree(tree.get_root())
@@ -43,7 +42,14 @@ class RL:
                         distribution.append(0.0)
                 self.rpbuffer = np.append(self.rpbuffer, np.array([self.game.get_game_state() + tuple(distribution)]), axis=0)
                 game_state = self.game.do_action(tree.get_best_action())[0]
-                tree = MonteCarloTreeSearch(game_state, anet=ANET())
-            self.anet.fit(self.rpbuffer)
-        self.anet.save_model(self.rpbuffer, "my_code/"+str(self.games)+"_"+str(self.seconds))
-
+                tree = MonteCarloTreeSearch(game_state = game_state, anet=self.anet)
+            #pick 500 random samples from the rbuffer and fit the anet
+            if len(self.rpbuffer) > params.max_buffer_size:
+                randomnumber = np.random.randint(len(self.rpbuffer), size=params.max_buffer_size)
+                sample_buffer = self.rpbuffer[randomnumber,:]
+            else:
+                sample_buffer = self.rpbuffer
+            self.anet.fit(sample_buffer)
+            if i % params.save_interval == 0:
+                self.anet.save_model(sample_buffer, "my_code/d"+str(i)+"_"+str(params.search_seconds))
+        self.anet.save_model(sample_buffer, "my_code/d"+str(params.actual_games)+"_"+str(params.search_seconds))
