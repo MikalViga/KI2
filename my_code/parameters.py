@@ -16,22 +16,21 @@ activation_function = 'relu' #relu, tanh, sigmoid, selu, elu, softplus, softsign
 optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate) #SGD, Adagrad, Adadelta, Adam, Adamax, Nadam, RMSprop
 
 #MCTS
-actual_games = 1000
+actual_games = 10
 search_seconds = 5
 
 #RL training
 num_cached_anets = 5
-save_interval = 50 #actual_games/num_cached_anets
+save_interval = 2 #actual_games/num_cached_anets
 max_buffer_size = 512
-
+gen_name = "g"
 
 #other
 num_cached_anets = 5
 
 #Simulation
-num_games = 1
-topp_models_filenames = ["c850_4.h5", "d850_5.h5"]
-thinking_depth = 40
+num_games = 100
+topp_models_filenames = ["f0_5.h5","f0_5.h5"]
 
 
 

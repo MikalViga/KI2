@@ -16,7 +16,7 @@ class RL:
     def __init__(self) -> None:
         self.game = Hex()
         self.rpbuffer = np.empty((0,self.game.get_board_size()**2 + 1 + len(self.game.get_all_actions())), dtype=np.float64)
-        self.anet = ANET(filepath="my_code/c950_4.h5")
+        self.anet = ANET() #ANET(filepath="my_code/c950_4.h5")
 
     def simulate(self) -> None:
        
@@ -51,5 +51,5 @@ class RL:
                 sample_buffer = self.rpbuffer
             self.anet.fit(sample_buffer)
             if i % params.save_interval == 0:
-                self.anet.save_model(sample_buffer, "my_code/d"+str(i)+"_"+str(params.search_seconds))
-        self.anet.save_model(sample_buffer, "my_code/d"+str(params.actual_games)+"_"+str(params.search_seconds))
+                self.anet.save_model(sample_buffer, "my_code/f"+str(i)+"_"+str(params.search_seconds))
+        self.anet.save_model(sample_buffer, "my_code/f"+str(params.actual_games)+"_"+str(params.search_seconds))

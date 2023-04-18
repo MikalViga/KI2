@@ -38,6 +38,7 @@ class MCTNode:
 
     def get_win_percentage(self) -> float:
         return self.q_value/self.visits
+    
     def add_child(self, action: int, child: MCTNode) -> None:
         self.children[action] = child
 
@@ -96,6 +97,7 @@ class MonteCarloTreeSearch:
             key, best_node = random.choice(list(node.children.items()))
             for action, child in node.children.items():
                 if node.get_game_state()[0] == 1:
+                    
                     if child.get_uct_value() + child.get_win_percentage() > best_node.get_uct_value() + best_node.get_win_percentage() :
                         best_node = child
                 else:
